@@ -6,8 +6,8 @@ It contains from default:
 1. a MySQL container to provide database
 2. a PHPMyAdmin container to manage database and tables
 3. a PHP as FPM container to provide php with own php.ini
-4. an apache webserver
-5. a ftp service to manage files if you want like a real webserver
+4. an Apache webserver
+5. a FTP service to manage files if you want like a real webserver
 
 NOTE:
 This should only be for local development! All ports are open like XAMPP and everyone in the local network have access!
