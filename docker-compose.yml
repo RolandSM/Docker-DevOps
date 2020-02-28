@@ -1,0 +1,128 @@
+#
+# Docker Compose script to run a complete web development environment.
+#
+# @author Roland Meier <info@medialekt.de>
+# @link   https://medialekt.de
+#
+version: "3.7"
+services:
+  mysql:
+    container_name: mysql
+    image: mysql:${MYSQL_VERSION:-latest}
+    restart: always
+    networks:
+      - local
+    ports:
+      - "3306:3306"
+    volumes:
+      - "./mysql:/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    depends_on:
+      - mysql
+    networks:
+      - local
+    ports:
+      - "8080:80"
+    volumes:
+      - "./phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php"
+    environment:
+      PMA_HOST: "mysql"
+  php:
+    container_name: php
+    build:
+      context: './php/'
+      args:
+        PHP_VERSION: ${PHP_VERSION}
+    restart: always
+    networks:
+      - local
+    volumes:
+      - "./php/php.ini:/usr/local/etc/php/php.ini"
+      - "./html:/var/www/html"
+#    extra_hosts:
+#      - "example.domain:000.000.000.000"
+  apache:
+    container_name: apache
+    build:
+      context: './apache/'
+      args:
+       APACHE_VERSION: ${APACHE_VERSION}
+    restart: always
+    depends_on:
+      - php
+      - mysql
+    networks:
+      - local
+    ports:
+      - "80:80"
+    volumes:
+      - "./html:/var/www/html"
+  ftp:
+    container_name: pure-ftpd
+    image: stilliard/pure-ftpd:latest
+    restart: always
+    depends_on:
+      - apache
+    networks:
+      - local
+    ports:
+      - target: 21
+        published: 21
+        protocol: tcp
+        mode: host
+      - target: 30000
+        published: 30000
+        protocol: tcp
+        mode: host
+      - target: 30001
+        published: 30001
+        protocol: tcp
+        mode: host
+      - target: 30002
+        published: 30002
+        protocol: tcp
+        mode: host
+      - target: 30003
+        published: 30003
+        protocol: tcp
+        mode: host
+      - target: 30004
+        published: 30004
+        protocol: tcp
+        mode: host
+      - target: 30005
+        published: 30005
+        protocol: tcp
+        mode: host
+      - target: 30006
+        published: 30006
+        protocol: tcp
+        mode: host
+      - target: 30007
+        published: 30007
+        protocol: tcp
+        mode: host
+      - target: 30008
+        published: 30008
+        protocol: tcp
+        mode: host
+      - target: 30009
+        published: 30009
+        protocol: tcp
+        mode: host
+    volumes:
+      - "./html:/var/www/html"
+    environment: 
+      PUBLICHOST: localhost
+      FTP_USER_NAME: "${FTP_USER}"
+      FTP_USER_PASS: "${FTP_PASSWORD}"
+      FTP_USER_HOME: "/var/www/html"
+      FTP_USER_UID: 1000
+      FTP_USER_GID: 1000
+networks:
+  local:
