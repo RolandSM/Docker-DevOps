@@ -32,6 +32,7 @@ services:
       - "./phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php"
     environment:
       PMA_HOST: "mysql"
+      UPLOAD_LIMIT: 128000000
   php:
     container_name: php
     build:
@@ -117,7 +118,7 @@ services:
         mode: host
     volumes:
       - "./html:/var/www/html"
-    environment: 
+    environment:
       PUBLICHOST: localhost
       FTP_USER_NAME: "${FTP_USER}"
       FTP_USER_PASS: "${FTP_PASSWORD}"
